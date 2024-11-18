@@ -6,7 +6,7 @@ std Time: 0.58s
 Time Limit: 2.00s
 */
 
-#include "int2048.h"
+#include "../build.h"
 
 sjtu::int2048 a, b;
 std::string s1, s2;
