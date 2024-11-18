@@ -166,6 +166,26 @@ int absCmp(const int2048 &a, const int2048 &b) {
     return 0;
 }
 
+int absCmp(const int2048 &a, const int2048 &b, int move_a) {
+    int la = a.len() - move_a * 4;
+    int lb = b.len();
+    if (la > lb) {
+        return 1;
+    }
+    else if (la < lb) {
+        return -1;
+    }
+    for (int i = (la - 1) / 4; i >= 0; i--) {
+        if (a.digits[i + move_a] > b.digits[i]) {
+            return 1;
+        }
+        else if (a.digits[i + move_a] < b.digits[i]) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
 bool operator!=(const int2048 &a, const int2048 &b) {
     return !(a==b);
 }
@@ -366,50 +386,54 @@ int2048 & int2048::operator/=(const int2048 & b) {
     return *this;
 }
 
-int2048 operator/(int2048 a, const int2048 & b_) {
+int divide_ (int2048 &a, const int2048 &b, int p) {
+    int cmp = absCmp(a, b, p);
+    if (cmp < 0) {
+        return 0;
+    }
+    else if (cmp == 0) {
+        return 1;
+    }
+    int l = 0; int r = 10000;
+    int mid;
+    int ans = 0;
+    while (l <= r) {
+        mid = (l + r) / 2;
+        if (absCmp(a, b * int2048(mid), p) >= 0) {
+            ans = mid;
+            l = mid + 1;
+        }
+        else {
+            r = mid - 1;
+        }
+    }
+    return ans;
+}
+
+int2048 operator/(int2048 a, const int2048 & b) {
     bool signal;
-    if (a.signal == b_.signal) {
+    if (a.signal == b.signal) {
         signal = true;
     }
     else {
         signal = false;
     }
-    int2048 b(b_.digits, true);
-    a.signal = true;
-    int cmp = absCmp(b, int2048(10000));
-    if (cmp == 0) {
-        a.digits.erase(a.digits.begin());
-        if (a.digits.empty()) {
-            a.digits.push_back(0);
-        }
-        a.signal = signal;
-        return a;
+    int2048 res(a.digits.size());
+    for (int i = a.digits.size()-b.digits.size() - 1; i >= 0; i--) {
+        int d = divide_(a, b, i);
+        a -= b * int2048(d) << i;
+        res.digits[i] = d;
     }
-    else if (cmp < 0) {
-        for (int i = a.digits.size()-1; i >= 0; i--) {
-            if (i > 0) {
-                a.digits[i-1] += a.digits[i] % b.digits[0] * 10000;
-            }
-            a.digits[i] /= b.digits[0];
-        }
-        a.signal = signal;
-        return a;
+    res.cut();
+    res.signal = signal;
+    return res;
+}
+
+int2048 operator<<(int2048 a, int p) {
+    for (int i = 0; i<p; i++) {
+        a.digits.insert(a.digits.begin(), 0);
     }
-    int2048 l(0);
-    int2048 r = a / int2048(10000);
-    int2048 mid, ans = l;
-    while (l <= r) {
-        mid = (l + r) / int2048(2);
-        if (mid * b > a) {
-            r = mid - 1;
-        }
-        else {
-            l = mid + 1;
-            ans = mid;
-        }
-    }
-    ans.signal = signal;
-    return ans;
+    return a;
 }
 
 int2048 & int2048::operator%=(const int2048 & b) {
@@ -425,12 +449,7 @@ int2048 operator%(int2048 a, const int2048 & b) {
 } // namespace sjtu
 
 int main() {
-    sjtu::int2048 a("-695428898082480522332164088268129677800793802871414506171749557459180009155183212043517794276");
-    sjtu::int2048 b("-495508229187833544681199276240365769370959345897378468521329396734317523064960616872159548113");
-    std::cout << a * b << "\n\n";
-    std::cout << (a *= b) << "\n\n";
-    a *= b;
-    a *= a;
-    a *= b;
-    std::cout << (b *= a) << '\n';
+    sjtu::int2048 a(8000);
+    sjtu::int2048 b(1000);
+    std::cout << a / b << '\n';
 }

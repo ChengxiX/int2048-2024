@@ -38,8 +38,10 @@ public:
   // ===================================
 
   int len() const;
+  friend int absCmp(const int2048 &, const int2048 &, int);
   friend int absCmp(const int2048 &, const int2048 &);
   void cut();
+  friend int divide_(int2048 &, const int2048 &, int);
 
   // 读入一个大整数
   void read(const std::string &);
@@ -82,6 +84,7 @@ public:
 
   friend std::istream &operator>>(std::istream &, int2048 &);
   friend std::ostream &operator<<(std::ostream &, const int2048 &);
+  friend int2048 operator<<(int2048, int);
 
   friend bool operator==(const int2048 &, const int2048 &);
   friend bool operator!=(const int2048 &, const int2048 &);
