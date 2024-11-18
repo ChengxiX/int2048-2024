@@ -29,12 +29,17 @@ public:
   int2048(long long);
   int2048(const std::string &);
   int2048(const int2048 &);
+  int2048(const std::vector<int>&, bool);
 
   // 以下给定函数的形式参数类型仅供参考，可自行选择使用常量引用或者不使用引用
   // 如果需要，可以自行增加其他所需的函数
   // ===================================
   // Integer1
   // ===================================
+
+  int len() const;
+  friend int absCmp(const int2048 &, const int2048 &);
+  void cut();
 
   // 读入一个大整数
   void read(const std::string &);
@@ -61,10 +66,10 @@ public:
   int2048 &operator=(const int2048 &);
 
   int2048 &operator+=(const int2048 &);
-  friend int2048 operator+(int2048, const int2048 &);
+  friend int2048 operator+(const int2048 &, const int2048 &);
 
   int2048 &operator-=(const int2048 &);
-  friend int2048 operator-(int2048, const int2048 &);
+  friend int2048 operator-(const int2048 &, const int2048 &);
 
   int2048 &operator*=(const int2048 &);
   friend int2048 operator*(int2048, const int2048 &);
