@@ -171,6 +171,9 @@ bool operator!=(const int2048 &a, const int2048 &b) {
 }
 
 bool operator==(const int2048 &a, const int2048 &b) {
+    if (a.digits.size()==1&&a.digits[0]==0&&b.digits.size()==1&&b.digits[0]==0) {
+        return true;
+    }
     return (a.signal == b.signal) && (absCmp(a, b) == 0);
 }
 
@@ -334,28 +337,23 @@ int2048 operator*(int2048 a, const int2048 & b) {
     int2048 res;
     res.signal = a.signal == b.signal;
     res.digits.resize(a.digits.size() + b.digits.size());
-    int count = 0;
     for (int i = 0; i < b.digits.size(); i++) {
-        count ++;
         for (int j = 0; j < a.digits.size(); j++) {
             res.digits[i+j] += a.digits[j] * b.digits[i];
         }
-        if (count == 10) {
-            int carry = 0;
-            for (int j = 0; j < res.digits.size(); j++) {
-                res.digits[j] += carry;
-                if (res.digits[j] >= 10000) {
-                    carry = res.digits[j] / 10000;
-                    res.digits[j] %= 10000;
-                }
-                else {
-                    carry = 0;
-                }
+        int carry = 0;
+        for (int j = 0; j < res.digits.size(); j++) {
+            res.digits[j] += carry;
+            if (res.digits[j] >= 10000) {
+                carry = res.digits[j] / 10000;
+                res.digits[j] %= 10000;
             }
-            if (carry) {
-                res.digits.push_back(carry);
+            else {
+                carry = 0;
             }
-            count = 0;
+        }
+        if (carry) {
+            res.digits.push_back(carry);
         }
     }
     

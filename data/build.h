@@ -260,6 +260,9 @@ bool operator!=(const int2048 &a, const int2048 &b) {
 }
 
 bool operator==(const int2048 &a, const int2048 &b) {
+    if (a.digits.size()==1&&a.digits[0]==0&&b.digits.size()==1&&b.digits[0]==0) {
+        return true;
+    }
     return (a.signal == b.signal) && (absCmp(a, b) == 0);
 }
 
@@ -462,7 +465,8 @@ int2048 operator/(int2048 a, const int2048 & b_) {
     }
     int2048 b(b_.digits, true);
     a.signal = true;
-    if (b == int2048(10000)) {
+    int cmp = absCmp(b, int2048(10000));
+    if (cmp == 0) {
         a.digits.erase(a.digits.begin());
         if (a.digits.empty()) {
             a.digits.push_back(0);
@@ -470,7 +474,7 @@ int2048 operator/(int2048 a, const int2048 & b_) {
         a.signal = signal;
         return a;
     }
-    else if (b < int2048(10000)) {
+    else if (cmp < 0) {
         for (int i = a.digits.size()-1; i >= 0; i--) {
             if (i > 0) {
                 a.digits[i-1] += a.digits[i] % b.digits[0] * 10000;
@@ -484,7 +488,7 @@ int2048 operator/(int2048 a, const int2048 & b_) {
     int2048 r = a / int2048(10000);
     int2048 mid, ans = l;
     while (l <= r) {
-        mid = (l + r) / 2;
+        mid = (l + r) / int2048(2);
         if (mid * b > a) {
             r = mid - 1;
         }
