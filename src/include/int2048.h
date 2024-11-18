@@ -18,8 +18,11 @@
 // 请不要使用 using namespace std;
 
 namespace sjtu {
+  static const int DIGIT_NUM = 4;
 class int2048 {
   // todo
+  std::vector<int> digits;
+  bool signal; // true for positive, false for negative
 public:
   // 构造函数
   int2048();
